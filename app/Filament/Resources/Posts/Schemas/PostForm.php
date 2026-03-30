@@ -19,8 +19,8 @@ class PostForm
     {
         return $schema
             ->components([
-                TextInput::make('title')->required(),
-                TextInput::make('slug')->required(),
+                TextInput::make('title')->required()->minLength(5),
+                TextInput::make('slug')->required()->unique(ignoreRecord: true),
                 Select::make('category_id')
                     ->label('Category')
                     ->options(

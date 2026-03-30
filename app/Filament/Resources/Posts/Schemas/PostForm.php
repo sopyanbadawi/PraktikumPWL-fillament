@@ -21,47 +21,48 @@ class PostForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
-            ->components([
-                Section::make("Post Details")
-                ->Description("Fill in the details of the post.")
-                ->icon('heroicon-o-document-text')
-                ->schema([
-                    //grouping fields into 2 columns
-                    Group::make([
-                        TextInput::make('title')->required()->minLength(5),
-                        TextInput::make('slug')->required()->unique(ignoreRecord: true),
-                        Select::make('category_id')
-                            ->relationship('category', 'name')
-                            ->preload()
-                            ->searchable()
-                            ->label('Category')
-                            ->options(
-                                \App\Models\Category::all()->pluck('name', 'id')
-                            ),
-                        ColorPicker::make('color'),
-                    ])->columns(2),
-                        //MarkdownEditor::make('body'),
-                        RichEditor::make('body'),
-                // ])->columnSpanFull(),
-                ])->columnSpan(2),
+        ->components([
+            //Grouping kiri 2
+            Group::make([
+                Section::make('Post Details')
+                    ->description('Isi detail utama postingan di sini')
+                    ->icon('heroicon-o-document-text') // Icon 1
+                    ->schema([
+                        // Grouping di dalam Section biar field utama jadi 2 kolom
+                        Group::make([
+                            TextInput::make('title')->required(),
+                            TextInput::make('slug')->required(),
+                            Select::make('category_id')
+                                ->relationship('category', 'name')
+                                ->searchable()
+                                ->preload(),
+                            ColorPicker::make('color'),
+                        ])->columns(2), 
 
-                //Grouping fields into 2 columns
-                Group::make([
-                    //section 2
-                    Section::make("Image Upload")
+                        MarkdownEditor::make('content')
+                            ->columnSpanFull(), 
+                    ]),
+            ])->columnSpan(2),
+
+            //Grouping kiri 2
+            Group::make([
+                Section::make('Image Upload')
+                    ->icon('heroicon-o-photo') // Icon 2 (Icon berbeda)
                     ->schema([
                         FileUpload::make('image')
-                            ->disk("public")
-                            ->directory("posts"),
+                            ->disk('public')
+                            ->directory('posts'),
                     ]),
-                    //section 3
-                    Section::make("Meta Information")
+
+                Section::make('Meta Information')
+                    ->icon('heroicon-o-tag') // Icon 3 (Icon berbeda)
                     ->schema([
                         TagsInput::make('tags'),
-                        CheckBox::make('published'),
+                        Checkbox::make('published'),
                         DateTimePicker::make('published_at'),
                     ]),
-                ])->columnSpan(1),
-            ])->columns(3);
+            ])->columnSpan(1),
+
+        ])->columns(3);
     }
 }

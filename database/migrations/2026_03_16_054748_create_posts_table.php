@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug');
-            $table->integer('category_id');
+            $table->unsignedBigInteger('category_id');
             $table->string('color')->nullable();
             $table->string('image')->nullable();
             $table->text('body')->nullable();
@@ -23,6 +23,8 @@ return new class extends Migration
             $table->boolean('published')->default(false);
             $table->date('published_at')->nullable();
             $table->timestamps();
+
+            $table->foreign('category_id')->references('id')->on('categories');
         });
     }
 

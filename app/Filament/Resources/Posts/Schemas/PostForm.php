@@ -32,18 +32,28 @@ class PostForm
                         Group::make([
                             TextInput::make('title')
                                 ->required()
-                                ->rules(['min:3 | max:100']),
+                                ->rules(['min:5, max:100'])
+                                ->validationMessages([
+                                    'required' => 'Judul postingan wajib diisi!',
+                                    'min' => 'Judul postingan minimal harus 5 karakter.',
+                                ]),
                             TextInput::make('slug')
+                                ->minLength(3)
                                 ->required()
                                 ->unique()
                                 ->validationMessages([
-                                    'unique' => 'Slug harus unik dan tidak boleh sama.',
+                                    'required' => 'Slug tidak boleh kosong!',
+                                    'unique' => 'Slug ini sudah dipakai, silakan cari yang lain.',
+                                    'min' => 'Slug minimal harus 3 karakter.',
                                 ]),
                             Select::make('category_id')
                                 ->relationship('category', 'name')
                                 ->searchable()
                                 ->preload()
-                                ->required(),
+                                ->required()
+                                ->validationMessages([
+                                    'required' => 'Kategori wajib dipilih!',
+                                ]),
                             ColorPicker::make('color'),
                         ])->columns(2), 
 

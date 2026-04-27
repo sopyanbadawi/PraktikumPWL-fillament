@@ -1,0 +1,66 @@
+name: docker-setup
+
+services:
+  laravel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${APP_PORT:-8888}:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - .:/app
+      - vendor:/app/vendor
+    environment:
+      SERVER_NAME: :80
+      DB_CONNECTION: mysql
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    restart: always
+    ports: 
+      - "63306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mdata:/var/lib/mysql
+
+  bytebase:
+    image: bytebase/bytebase:latest
+    restart: always
+    ports:
+      - "5679:5678"
+    command: ["--port", "5678", "--data", "/var/opt/bytebase"]
+    volumes:
+      - bytebase_data:/var/opt/bytebase
+    depends_on:
+      - db
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: ${DB_HOST}
+      PMA_USER: ${DB_USER}
+      PMA_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - db
+
+volumes:
+  mdata:
+  bytebase_data:
+  vendor:
